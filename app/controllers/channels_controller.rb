@@ -2,16 +2,17 @@ class ChannelsController < ApplicationController
   skip_before_action :verify_authenticity_token
   def scan
     fb_channel_name = params[:fb].split("/").last if params[:fb].present?
-    oauth_token = "EAACEdEose0cBAK13JoqJ6ig5THQ3f2tRygY8NWK6WA8S1flHkFZCL74oxG43ilHZATQPqOH348iiF58pLGK4DmPeboYyyqdMCFelooRFKmmpZBTjZBZCGhZBAg05eV6dN63gxZBIP0zFwvXZAnkJG6xPYd4d2rsaKL3hDpZA1Mokp3duZAxoiR0bdnHNK0PU9J7ZBKANIRnGz0kvwZDZD"
-    
+    oauth = Koala::Facebook::OAuth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_APP_SECRET'])
+    app_access_token = oauth.get_app_access_token 
+    debugger
     begin
-      client = Koala::Facebook::API.new(oauth_token)
+      client = Koala::Facebook::API.new(app_access_token)
       if fb_channel_name.present?
         posts = client.get_connection(fb_channel_name, 'posts', {
           since: 1.months.ago.to_i,
           fields: ['message', 'id', 'picture', 'link', 'created_time']
         })
-        
+        debugger
         render :json => "fb channel has no posts from the past month" if posts.size == 0
         
         max_original_created_time = Post.facebook_maximum
@@ -42,5 +43,10 @@ class ChannelsController < ApplicationController
       puts e.message
     end
     
+  end
+  
+  def get_access_token
+    debugger
+    puts 1
   end
 end
