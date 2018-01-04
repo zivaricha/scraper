@@ -5,6 +5,7 @@ class ChannelsController < ApplicationController
     fb_channel_name = FacebookApi.get_channel_name(params[:fb])
     begin
       @graph = FacebookApi.get_koala_graph_api_obj
+      
       if fb_channel_name.present?
         posts = @graph.get_connection(fb_channel_name, 'posts', 
                                       {since: 1.months.ago.to_i,
@@ -17,6 +18,8 @@ class ChannelsController < ApplicationController
         
         while posts.size > 0
           posts.each do |post|
+            # break the operation if encounterd an existing post, based on the assumptions that posts are orders by date
+            # and that 2 posts cant be posted at the same time
             if max_original_created_time.present? && post["created_time"] <= max_original_created_time
               reached_existing_post = true
               break 
@@ -27,7 +30,7 @@ class ChannelsController < ApplicationController
             if @post.save
               puts "post #{@post.identifier} was saved succefully"
             else
-              puts "this error prevented from being saved #{@post.errors.full_messages}"
+              puts "these error prevented the post from being saved #{@post.errors.full_messages}"
             end
           end
           break if reached_existing_post
@@ -39,6 +42,5 @@ class ChannelsController < ApplicationController
     rescue Exception => e
       render :json => "an error occured in the proccess : #{e.message}" 
     end
-    
   end
 end
