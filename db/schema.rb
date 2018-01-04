@@ -11,15 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180103145246) do
+ActiveRecord::Schema.define(version: 20180103163157) do
 
   create_table "posts", force: :cascade do |t|
-    t.integer  "identifier",     limit: 8
+    t.integer  "identifier",            limit: 8
     t.string   "caption"
     t.string   "attachment_url"
     t.string   "social_media"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.datetime "original_created_time"
   end
 
 end
